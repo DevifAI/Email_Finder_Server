@@ -5,9 +5,9 @@ const generateToken = require("../utils/generateToken");
 // Sign up (admin & user)
 exports.signup = async (req, res) => {
   try {
-    const { email, password, role } = req.body;
+    const { email, password, role, isAdminAllowed } = req.body;
 
-    if (role === "admin") {
+    if (role === "admin" && !isAdminAllowed) {
       // Disallow admin creation via API (can create manually or seed)
       return res
         .status(403)
@@ -22,11 +22,11 @@ exports.signup = async (req, res) => {
     user = await User.create({
       email,
       password: hashedPassword,
-      role: "user",
+      role,
     });
 
     res.status(201).json({
-      message: "User created",
+      message: `${role} created successfully`,
       token: generateToken(user),
     });
   } catch (err) {

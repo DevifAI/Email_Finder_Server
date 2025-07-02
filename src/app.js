@@ -1,8 +1,8 @@
 const express = require("express");
 const passport = require("passport");
 const session = require("express-session");
-const authRoutes = require("./routes/authRoutes");
-const userRoutes = require("./routes/userRoutes");
+const authRoutes = require("./routes/auth.routes");
+const userRoutes = require("./routes/user.routes");
 require("./config/passport");
 
 const app = express();
@@ -20,7 +20,7 @@ app.use(passport.initialize());
 app.use(passport.session());
 
 // Routes
-app.use("/api/auth", authRoutes);
-app.use("/api/users", userRoutes);
+app.use("/emailFinder/api/auth", authRoutes);
+app.use("/emailFinder/api/users", userRoutes);
 
 module.exports = app;

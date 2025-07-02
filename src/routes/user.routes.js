@@ -1,31 +1,19 @@
 const express = require("express");
-const passport = require("passport");
-const { signup, signin } = require("../controllers/authController");
+const { protect, adminOnly } = require("../middlewares/auth.middleware");
+const {
+  getUsers,
+  getUser,
+  updateUser,
+  deleteUser,
+} = require("../controllers/user.controller");
 
 const router = express.Router();
 
-router.post("/signup", signup);
-router.post("/signin", signin);
+router.use(protect, adminOnly);
 
-// Google OAuth routes
-router.get(
-  "/google",
-  passport.authenticate("google", { scope: ["profile", "email"] })
-);
-
-router.get(
-  "/google/callback",
-  passport.authenticate("google", {
-    failureRedirect: "/login",
-    session: false,
-  }),
-  (req, res) => {
-    // Send token
-    res.json({
-      message: "Google login success",
-      token: require("../utils/generateToken")(req.user),
-    });
-  }
-);
+router.get("/", getUsers);
+router.get("/:id", getUser);
+router.put("/:id", updateUser);
+router.delete("/:id", deleteUser);
 
 module.exports = router;

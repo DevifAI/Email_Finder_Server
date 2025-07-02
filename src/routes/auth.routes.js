@@ -1,11 +1,21 @@
 const express = require("express");
 const passport = require("passport");
-const { signup, signin } = require("../controllers/authController");
+const { signup, signin } = require("../controllers/auth.controlller");
 
 const router = express.Router();
 
 router.post("/signup", signup);
 router.post("/signin", signin);
+router.post("/createadminaccount", signup);
+
+router.post("/logout", (req, res) => {
+  req.logout((err) => {
+    if (err) {
+      return res.status(500).json({ message: "Logout failed" });
+    }
+    res.json({ message: "Logged out successfully" });
+  });
+});
 
 // Google OAuth routes
 router.get(
