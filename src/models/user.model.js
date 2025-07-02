@@ -6,6 +6,10 @@ const userSchema = new mongoose.Schema(
     password: { type: String },
     googleId: { type: String }, // only for Google users
     role: { type: String, enum: ["admin", "user"], default: "user" },
+    subscription: {
+      plan: { type: mongoose.Schema.Types.ObjectId, ref: "Plan" },
+      subscribedAt: { type: Date },
+    },
   },
   { timestamps: true }
 );
