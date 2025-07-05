@@ -9,9 +9,12 @@ const {
 
 const router = express.Router();
 
-router.use(protect, adminOnly);
+router.use(protect);
 
-router.get("/", getUsers);
+// only admin can access this route
+
+router.get("/", adminOnly, getUsers);
+// rest of this routes can be accessible by the user as well
 router.get("/:id", getUser);
 router.put("/:id", updateUser);
 router.delete("/:id", deleteUser);

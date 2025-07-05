@@ -30,7 +30,7 @@ exports.getUsers = async (req, res) => {
     // Get total count for pagination info
     const total = await User.countDocuments(filter);
 
-    res.json({
+    res.status(200).json({
       page,
       limit,
       total,
@@ -47,16 +47,26 @@ exports.getUsers = async (req, res) => {
 exports.getUser = async (req, res) => {
   const user = await User.findById(req.params.id);
   if (!user) return res.status(404).json({ message: "User not found" });
-  res.json(user);
+  res.status(200).json(user);
 };
 
 // Admin: Update user
 exports.updateUser = async (req, res) => {
+  console.log("Updating user:", req.params.id, req.body);
   const user = await User.findByIdAndUpdate(req.params.id, req.body, {
     new: true,
   });
   if (!user) return res.status(404).json({ message: "User not found" });
-  res.json(user);
+  res.status(200).json({
+    message: "User updated successfully",
+    user: {
+      id: user._id,
+      name: user.name,
+      email: user.email,
+      role: user.role,
+      createdAt: user.createdAt,
+    },
+  });
 };
 
 // Admin: Delete user

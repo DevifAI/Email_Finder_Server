@@ -1,5 +1,5 @@
 const express = require("express");
-const { protect, adminOnly } = require("../middlewares/auth.middleware");
+const { protect } = require("../middlewares/auth.middleware");
 const { subscribeToPlan } = require("../controllers/subscription.controller");
 
 const router = express.Router();

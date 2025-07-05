@@ -9,6 +9,7 @@ const userSchema = new mongoose.Schema(
     subscription: {
       plan: { type: mongoose.Schema.Types.ObjectId, ref: "Plan" },
       subscribedAt: { type: Date },
+      expiresAt: { type: Date },
     },
   },
   { timestamps: true }

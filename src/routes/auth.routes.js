@@ -1,12 +1,16 @@
 const express = require("express");
 const passport = require("passport");
-const { signup, signin } = require("../controllers/auth.controlller");
+const {
+  signup,
+  signin,
+  createAdminAccount,
+} = require("../controllers/auth.controlller");
 
 const router = express.Router();
 
 router.post("/signup", signup);
 router.post("/signin", signin);
-router.post("/createadminaccount", signup);
+router.post("/createadminaccount", createAdminAccount);
 
 router.post("/logout", (req, res) => {
   req.logout((err) => {
