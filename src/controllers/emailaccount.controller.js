@@ -10,11 +10,13 @@ exports.getAllEmailAccounts = async (req, res) => {
       order = "desc",
       email,
       companyName,
+      name,
     } = req.query;
     const query = {};
 
     if (email) query.email = new RegExp(email, "i");
     if (companyName) query.companyName = new RegExp(companyName, "i");
+    if (name) query.name = new RegExp(name, "i");
 
     const emailAccounts = await EmailAccount.find(query)
       .sort({ [sort]: order === "asc" ? 1 : -1 })
@@ -40,7 +42,9 @@ exports.getEmailAccount = async (req, res) => {
     const account = await EmailAccount.findById(req.params.id);
     if (!account) return res.status(404).json({ message: "Record not found" });
 
-    res.json(account);
+    res
+      .status(200)
+      .json({ account, message: "Emailaccount details fetched successfully" });
   } catch (err) {
     res.status(500).json({ message: "Error fetching record" });
   }
@@ -82,7 +86,9 @@ exports.updateEmailAccount = async (req, res) => {
 
     if (!account) return res.status(404).json({ message: "Record not found" });
 
-    res.json(account);
+    res
+      .status(200)
+      .json({ account, message: "Email account updated successfully" });
   } catch (err) {
     res.status(500).json({ message: "Error updating record" });
   }

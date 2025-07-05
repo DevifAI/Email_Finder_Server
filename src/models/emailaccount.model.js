@@ -2,12 +2,12 @@ const mongoose = require("mongoose");
 
 const emailAccountSchema = new mongoose.Schema(
   {
-    name: String,
-    email: { type: String, unique: true },
-    companyName: String,
-    salaryRange: String,
-    address: String,
-    phoneNumber: String,
+    name: { type: String, required: true },
+    email: { type: String, unique: true, required: true },
+    companyName: { type: String, required: true },
+    salaryRange: { type: String, required: true },
+    address: { type: String, required: true },
+    phoneNumber: { type: String, required: true },
   },
   { timestamps: true }
 );
