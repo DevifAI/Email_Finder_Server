@@ -133,13 +133,15 @@ exports.signin = async (req, res) => {
 exports.logout = async (req, res) => {
   try {
     const token = req.token;
-    const user = req.user;
+    const userId = req.user.id;
 
-    if (!token || !user) {
+    if (!token || !userId) {
       return res.status(401).json({ message: "Not authenticated" });
     }
 
     // Remove the current token from tokens array
+
+    const user = User.findById(userId);
     user.tokens = user.tokens.filter((t) => t.token !== token);
     await user.save();
 
