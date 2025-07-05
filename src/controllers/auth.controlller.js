@@ -124,7 +124,6 @@ exports.signin = async (req, res) => {
     res.json({
       message: "Signed in",
       token,
-      session: req.session.user,
     });
   } catch (err) {
     res.status(500).json({ message: err.message });
