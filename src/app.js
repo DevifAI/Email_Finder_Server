@@ -4,6 +4,7 @@ const session = require("express-session");
 const authRoutes = require("./routes/auth.routes");
 const userRoutes = require("./routes/user.routes");
 const planRoutes = require("./routes/plans.routes");
+const subscriptionRoutes = require("./routes/subscription.route");
 require("./config/passport");
 
 const app = express();
@@ -24,5 +25,6 @@ app.use(passport.session());
 app.use("/emailFinder/api/auth", authRoutes);
 app.use("/emailFinder/api/users", userRoutes);
 app.use("/emailFinder/api/plans", planRoutes);
+app.use("/emailFinder/api/subscriptions", subscriptionRoutes);
 
 module.exports = app;
