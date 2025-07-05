@@ -1,9 +1,10 @@
 const bcrypt = require("bcryptjs");
+const AuthAccount = require("../models/auth.model");
 const User = require("../models/user.model");
 const generateToken = require("../utils/generateToken");
 const { roles } = require("../utils/config");
 
-// Sign up (admin & user)
+// Sign up (user only)
 exports.signup = async (req, res) => {
   try {
     const { email, password, role } = req.body;
@@ -14,34 +15,47 @@ exports.signup = async (req, res) => {
       });
     }
 
-    let user = await User.findOne({ email });
+    //  Check if AuthAccount exists
+    let user = await AuthAccount.findOne({ email });
     if (user) {
-      return res.status(400).json({ message: "User already exists" });
+      return res.status(400).json({
+        message: "An account with this email already exists. Please sign in.",
+      });
     }
 
     const hashedPassword = await bcrypt.hash(password, 10);
+    const token = generateToken({ id: email });
 
-    user = await User.create({
+    //  Create AuthAccount
+    user = await AuthAccount.create({
       email,
       password: hashedPassword,
-      role: role || roles.USER, // default to user if role is not supplied
+      role: roles.USER,
+      tokens: [{ token }],
+    });
+
+    //  Create linked User profile (only if AuthAccount is new)
+    await User.create({
+      authId: user._id,
+      email: user.email,
+      role: user.role,
     });
 
     res.status(201).json({
-      message: `${user.role} created successfully`,
-      token: generateToken(user),
+      message: "User account + profile created successfully",
+      token,
     });
   } catch (err) {
     res.status(500).json({ message: err.message });
   }
 };
-// Create admin account (only for initial setup)
 
+// Create admin account
 exports.createAdminAccount = async (req, res) => {
   try {
     const { email, password } = req.body;
 
-    let user = await User.findOne({ email });
+    let user = await AuthAccount.findOne({ email });
     if (user) {
       return res
         .status(400)
@@ -49,48 +63,25 @@ exports.createAdminAccount = async (req, res) => {
     }
 
     const hashedPassword = await bcrypt.hash(password, 10);
+    const token = generateToken({ id: email });
 
-    user = await User.create({
+    user = await AuthAccount.create({
       email,
       password: hashedPassword,
       role: roles.ADMIN,
+      tokens: [{ token }],
+    });
+
+    //  Create linked User profile (only if AuthAccount is new)
+    await User.create({
+      authId: user._id,
+      email: user.email,
+      role: user.role,
     });
 
     res.status(201).json({
       message: "Admin account created successfully",
-      token: generateToken(user),
-    });
-  } catch (err) {
-    res.status(500).json({ message: err.message });
-  }
-};
-
-exports.signup = async (req, res) => {
-  try {
-    const { email, password, role } = req.body;
-
-    if (role === "admin") {
-      return res.status(403).json({
-        message: "Admin accounts cannot be created via this signup route.",
-      });
-    }
-
-    let user = await User.findOne({ email });
-    if (user) {
-      return res.status(400).json({ message: "User already exists" });
-    }
-
-    const hashedPassword = await bcrypt.hash(password, 10);
-
-    user = await User.create({
-      email,
-      password: hashedPassword,
-      role: role || roles.USER, // default to user if role is not supplied
-    });
-
-    res.status(201).json({
-      message: `${user.role} created successfully`,
-      token: generateToken(user),
+      token,
     });
   } catch (err) {
     res.status(500).json({ message: err.message });
@@ -102,24 +93,40 @@ exports.signin = async (req, res) => {
   try {
     const { email, password } = req.body;
 
-    const user = await User.findOne({ email });
-    if (!user) return res.status(400).json({ message: "Invalid credentials" });
+    const user = await AuthAccount.findOne({ email });
+    if (!user) {
+      return res.status(400).json({ message: "Invalid credentials" });
+    }
 
     if (user.googleId) {
       return res.status(400).json({ message: "Please sign in with Google" });
     }
 
     const isMatch = await bcrypt.compare(password, user.password);
-    if (!isMatch)
+    if (!isMatch) {
       return res.status(400).json({ message: "Invalid credentials" });
+    }
+
+    // Generate new token
+    const token = generateToken({ id: user._id, role: user.role });
+
+    // Save token to DB (optional, if you want to track sessions)
+    user.tokens.push({ token });
+    await user.save();
+
+    // Create session
+    req.session.user = {
+      id: user._id,
+      email: user.email,
+      role: user.role,
+    };
 
     res.json({
       message: "Signed in",
-      token: generateToken(user),
+      token,
+      session: req.session.user,
     });
   } catch (err) {
     res.status(500).json({ message: err.message });
   }
 };
-
-// Google login handled by passport (no code needed here)

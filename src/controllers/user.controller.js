@@ -1,6 +1,6 @@
 const User = require("../models/user.model");
 
-// Admin: Get all users
+// Admin  : Get all users
 exports.getUsers = async (req, res) => {
   try {
     // Pagination
@@ -43,14 +43,38 @@ exports.getUsers = async (req, res) => {
   }
 };
 
-// Admin: Get user by ID
+// Admin + user : Get user by ID
 exports.getUser = async (req, res) => {
   const user = await User.findById(req.params.id);
   if (!user) return res.status(404).json({ message: "User not found" });
   res.status(200).json(user);
 };
+// Admin: Create user
+exports.createUser = async (req, res) => {
+  try {
+    const { email, role } = req.body;
 
-// Admin: Update user
+    // Check if user already exists
+    let user = await User.findOne({ email });
+    if (user) {
+      return res.status(400).json({ message: "User already exists" });
+    }
+
+    user = await User.create({
+      email,
+      role,
+    });
+
+    res.status(201).json({
+      message: "User created successfully",
+      user,
+    });
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+};
+
+// Admin + User : Update user
 exports.updateUser = async (req, res) => {
   console.log("Updating user:", req.params.id, req.body);
   const user = await User.findByIdAndUpdate(req.params.id, req.body, {
@@ -69,7 +93,7 @@ exports.updateUser = async (req, res) => {
   });
 };
 
-// Admin: Delete user
+// Admin + User : Delete user
 exports.deleteUser = async (req, res) => {
   const user = await User.findByIdAndDelete(req.params.id);
   if (!user) return res.status(404).json({ message: "User not found" });

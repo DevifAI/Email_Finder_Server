@@ -25,9 +25,7 @@ app.use(passport.initialize());
 app.use(passport.session());
 
 // Routes
-app.get("/emailFinder/api/ping", (res) => {
-  res.json({ status: "OK", timestamp: new Date() });
-});
+
 app.use("/emailFinder/api/auth", authRoutes);
 app.use("/emailFinder/api/users", userRoutes);
 app.use("/emailFinder/api/plans", planRoutes);
