@@ -130,3 +130,23 @@ exports.signin = async (req, res) => {
     res.status(500).json({ message: err.message });
   }
 };
+
+exports.logout = async (req, res) => {
+  try {
+    const token = req.token;
+    const user = req.user;
+
+    if (!token || !user) {
+      return res.status(401).json({ message: "Not authenticated" });
+    }
+
+    // Remove the current token from tokens array
+    user.tokens = user.tokens.filter((t) => t.token !== token);
+    await user.save();
+
+    res.json({ message: "Logged out successfully" });
+  } catch (err) {
+    console.error("Logout error:", err.message);
+    res.status(500).json({ message: "Error logging out" });
+  }
+};

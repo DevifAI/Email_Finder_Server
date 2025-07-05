@@ -11,6 +11,7 @@ exports.protect = (req, res, next) => {
     req.user = {
       id: decoded.id,
       role: decoded.role,
+      token,
     };
     next();
   } catch (err) {

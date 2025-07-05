@@ -4,6 +4,7 @@ const {
   signup,
   signin,
   createAdminAccount,
+  logout,
 } = require("../controllers/auth.controlller");
 
 const router = express.Router();
@@ -12,14 +13,7 @@ router.post("/signup", signup);
 router.post("/signin", signin);
 router.post("/createadminaccount", createAdminAccount);
 
-router.post("/logout", (req, res) => {
-  req.logout((err) => {
-    if (err) {
-      return res.status(500).json({ message: "Logout failed" });
-    }
-    res.json({ message: "Logged out successfully" });
-  });
-});
+router.post("/logout", logout);
 
 // Google OAuth routes
 router.get(
