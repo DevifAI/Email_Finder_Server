@@ -7,6 +7,7 @@ exports.protect = (req, res, next) => {
     return res.status(401).json({ message: "No token, authorization denied" });
 
   try {
+    console.log(token);
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
     req.user = {
       id: decoded.id,
