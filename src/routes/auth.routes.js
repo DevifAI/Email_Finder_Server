@@ -16,7 +16,7 @@ router.post("/createadminaccount", createAdminAccount);
 
 router.post("/logout", protect, logout);
 
-// Google OAuth routes
+// Google OAuth routes yty
 router.get(
   "/google",
   passport.authenticate("google", { scope: ["profile", "email"] })
