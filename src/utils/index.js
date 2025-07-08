@@ -1,2 +1,2 @@
-export * from "./generateToken";
+export * from "./utils";
 export * from "./config";

@@ -1,7 +1,7 @@
-const User = require("../models/user.model");
+import User from "../models";
 
 // Admin  : Get all users
-exports.getUsers = async (req, res) => {
+export const getUsers = async (req, res) => {
   try {
     // Pagination
     const page = parseInt(req.query.page) || 1; // default to page 1
@@ -44,13 +44,13 @@ exports.getUsers = async (req, res) => {
 };
 
 // Admin + user : Get user by ID
-exports.getUser = async (req, res) => {
+export const getUser = async (req, res) => {
   const user = await User.findById(req.params.id);
   if (!user) return res.status(404).json({ message: "User not found" });
   res.status(200).json(user);
 };
 // Admin: Create user
-exports.createUser = async (req, res) => {
+export const createUser = async (req, res) => {
   try {
     const { email, role } = req.body;
 
@@ -75,7 +75,7 @@ exports.createUser = async (req, res) => {
 };
 
 // Admin + User : Update user
-exports.updateUser = async (req, res) => {
+export const updateUser = async (req, res) => {
   console.log("Updating user:", req.params.id, req.body);
   const user = await User.findByIdAndUpdate(req.params.id, req.body, {
     new: true,
@@ -94,7 +94,7 @@ exports.updateUser = async (req, res) => {
 };
 
 // Admin + User : Delete user
-exports.deleteUser = async (req, res) => {
+export const deleteUser = async (req, res) => {
   const user = await User.findByIdAndDelete(req.params.id);
   if (!user) return res.status(404).json({ message: "User not found" });
   res.json({ message: "User deleted" });

@@ -1,8 +1,9 @@
-const express = require("express");
+import express from "express";
+import { protect, adminOnly } from "../middlewares";
+import upload from "../middlewares";
+import { uploadExcel } from "../controllers";
+
 const router = express.Router();
-const { protect, adminOnly } = require("../middlewares/auth.middleware");
-const upload = require("../middlewares/upload.middleware");
-const { uploadExcel } = require("../controllers/fileupload.controller");
 
 router.post(
   "/uploadfile",
@@ -12,4 +13,4 @@ router.post(
   uploadExcel
 );
 
-module.exports = router;
+export default router;

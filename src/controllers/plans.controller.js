@@ -1,7 +1,7 @@
-const Plan = require("../models/plans.model");
+import Plan from "../models";
 
 // USER + ADMIN: View all plans
-exports.getPlans = async (req, res) => {
+export const getPlans = async (req, res) => {
   try {
     const plans = await Plan.find().sort({ createdAt: -1 });
     res.json(plans);
@@ -12,7 +12,7 @@ exports.getPlans = async (req, res) => {
 };
 
 // ADMIN: Create plan
-exports.createPlan = async (req, res) => {
+export const createPlan = async (req, res) => {
   try {
     const { name, description, price, duration } = req.body;
     const plan = await Plan.create({ name, description, price, duration });
@@ -24,7 +24,7 @@ exports.createPlan = async (req, res) => {
 };
 
 // ADMIN: Update plan
-exports.updatePlan = async (req, res) => {
+export const updatePlan = async (req, res) => {
   try {
     const plan = await Plan.findByIdAndUpdate(req.params.id, req.body, {
       new: true,
@@ -38,7 +38,7 @@ exports.updatePlan = async (req, res) => {
 };
 
 // ADMIN: Delete plan
-exports.deletePlan = async (req, res) => {
+export const deletePlan = async (req, res) => {
   try {
     const plan = await Plan.findByIdAndDelete(req.params.id);
     if (!plan) return res.status(404).json({ message: "Plan not found" });

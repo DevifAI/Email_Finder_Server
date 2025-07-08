@@ -1,13 +1,14 @@
-const express = require("express");
-const router = express.Router();
-const { protect, adminOnly } = require("../middlewares/auth.middleware");
-const {
+import express from "express";
+import { protect, adminOnly } from "../middlewares";
+import {
   getAllEmailAccounts,
   getEmailAccount,
   createEmailAccount,
   updateEmailAccount,
   deleteEmailAccount,
-} = require("../controllers/emailaccount.controller");
+} from "../controllers";
+
+const router = express.Router();
 
 router.get("/", protect, getAllEmailAccounts);
 router.get("/:id", protect, getEmailAccount);
@@ -15,4 +16,4 @@ router.post("/", protect, adminOnly, createEmailAccount);
 router.put("/:id", protect, adminOnly, updateEmailAccount);
 router.delete("/:id", protect, adminOnly, deleteEmailAccount);
 
-module.exports = router;
+export default router;

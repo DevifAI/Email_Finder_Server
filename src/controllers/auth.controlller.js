@@ -1,11 +1,9 @@
-const bcrypt = require("bcryptjs");
-const AuthAccount = require("../models/auth.model");
-const User = require("../models/user.model");
-const generateToken = require("../utils/generateToken");
-const { roles } = require("../utils/config");
+import bcrypt from "bcryptjs";
+import { AuthAccount, User } from "../models";
+import generateToken, { roles } from "../utils";
 
 // Sign up (user only)
-exports.signup = async (req, res) => {
+export const signup = async (req, res) => {
   try {
     const { email, password } = req.body;
 
@@ -45,7 +43,7 @@ exports.signup = async (req, res) => {
 };
 
 // Create admin account
-exports.createAdminAccount = async (req, res) => {
+export const createAdminAccount = async (req, res) => {
   try {
     const { email, password } = req.body;
 
@@ -83,7 +81,7 @@ exports.createAdminAccount = async (req, res) => {
 };
 
 // Sign in
-exports.signin = async (req, res) => {
+export const signin = async (req, res) => {
   try {
     const { email, password } = req.body;
 
@@ -128,7 +126,7 @@ exports.signin = async (req, res) => {
   }
 };
 
-exports.logout = async (req, res) => {
+export const logout = async (req, res) => {
   try {
     console.log(req, "req in logout");
     const token = req.user.token;
