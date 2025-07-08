@@ -6,13 +6,13 @@ const {
   createAdminAccount,
   logout,
 } = require("../controllers/auth.controlller");
-const { protect } = require("../middlewares/auth.middleware");
+const { protect, adminOnly } = require("../middlewares/auth.middleware");
 
 const router = express.Router();
 
 router.post("/signup", signup);
 router.post("/signin", signin);
-router.post("/createadminaccount", createAdminAccount);
+router.post("/createadminaccount", protect, adminOnly, createAdminAccount);
 
 router.post("/logout", protect, logout);
 

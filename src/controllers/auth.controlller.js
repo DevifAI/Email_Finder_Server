@@ -7,13 +7,7 @@ const { roles } = require("../utils/config");
 // Sign up (user only)
 exports.signup = async (req, res) => {
   try {
-    const { email, password, role } = req.body;
-
-    if (role === roles.ADMIN) {
-      return res.status(403).json({
-        message: "Admin accounts cannot be created via this signup route.",
-      });
-    }
+    const { email, password } = req.body;
 
     //  Check if AuthAccount exists
     let user = await AuthAccount.findOne({ email });
@@ -108,7 +102,10 @@ exports.signin = async (req, res) => {
     }
 
     // Generate new token
+
     const token = generateToken({ id: user._id, role: user.role });
+
+    console.log(token, user, "before saving user");
 
     // Save token to DB (optional, if you want to track sessions)
     user.tokens.push({ token });
@@ -124,6 +121,7 @@ exports.signin = async (req, res) => {
     res.json({
       message: "Signed in",
       token,
+      role: user.role,
     });
   } catch (err) {
     res.status(500).json({ message: err.message });
@@ -132,7 +130,8 @@ exports.signin = async (req, res) => {
 
 exports.logout = async (req, res) => {
   try {
-    const token = req.token;
+    console.log(req, "req in logout");
+    const token = req.user.token;
     const userId = req.user.id;
 
     if (!token || !userId) {
