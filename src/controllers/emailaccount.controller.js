@@ -1,7 +1,7 @@
-const EmailAccount = require("../models/emailaccount.model");
+import EmailAccount from "../model";
 
 // GET all with filters + pagination + sorting
-exports.getAllEmailAccounts = async (req, res) => {
+export const getAllEmailAccounts = async (req, res) => {
   try {
     const {
       page = 1,
@@ -37,7 +37,7 @@ exports.getAllEmailAccounts = async (req, res) => {
 };
 
 // GET single
-exports.getEmailAccount = async (req, res) => {
+export const getEmailAccount = async (req, res) => {
   try {
     const account = await EmailAccount.findById(req.params.id);
     if (!account) return res.status(404).json({ message: "Record not found" });
@@ -51,7 +51,7 @@ exports.getEmailAccount = async (req, res) => {
 };
 
 // POST create
-exports.createEmailAccount = async (req, res) => {
+export const createEmailAccount = async (req, res) => {
   try {
     const { name, email, companyName, salaryRange, address, phoneNumber } =
       req.body;
@@ -76,7 +76,7 @@ exports.createEmailAccount = async (req, res) => {
 };
 
 // PUT update
-exports.updateEmailAccount = async (req, res) => {
+export const updateEmailAccount = async (req, res) => {
   try {
     const account = await EmailAccount.findByIdAndUpdate(
       req.params.id,
@@ -95,7 +95,7 @@ exports.updateEmailAccount = async (req, res) => {
 };
 
 // DELETE
-exports.deleteEmailAccount = async (req, res) => {
+export const deleteEmailAccount = async (req, res) => {
   try {
     const result = await EmailAccount.findByIdAndDelete(req.params.id);
     if (!result) return res.status(404).json({ message: "Record not found" });

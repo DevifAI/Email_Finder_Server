@@ -1,6 +1,8 @@
-const app = require("./src/app");
-const connectDB = require("./src/config/db");
-require("dotenv").config();
+import app from "./src/app.js";
+import connectDB from "./src/config/db.js";
+import dotenv from "dotenv";
+
+dotenv.config();
 
 // Connect to MongoDB
 connectDB();

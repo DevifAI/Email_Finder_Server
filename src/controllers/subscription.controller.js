@@ -1,10 +1,8 @@
-const User = require("../models/user.model");
-const Plan = require("../models/plans.model");
-const { roles } = require("../utils/config");
-const plansModel = require("../models/plans.model");
+import { User, Plan } from "../models";
+import { roles } from "../utils";
 
 // User subscribes to a plan
-exports.subscribeToPlan = async (req, res) => {
+export const subscribeToPlan = async (req, res) => {
   try {
     if (req.user.role !== roles.USER) {
       return res

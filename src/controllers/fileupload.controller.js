@@ -1,8 +1,8 @@
-const EmailAccount = require("../models/emailaccount.model");
-const XLSX = require("xlsx");
-const path = require("path");
+import EmailAccount from "../models";
+import * as XLSX from "xlsx";
+import path from "path";
 
-exports.uploadExcel = async (req, res) => {
+export const uploadExcel = async (req, res) => {
   try {
     if (req.user.role !== "admin") {
       return res.status(403).json({ message: "Only admin can upload files" });
