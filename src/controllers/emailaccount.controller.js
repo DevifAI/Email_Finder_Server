@@ -1,7 +1,15 @@
-import EmailAccount from "../model";
+const EmailAccount = require("../models/emailaccount.model");
+const User = require("../models/user.model");
+const { roles } = require("../utils/config");
 
 // GET all with filters + pagination + sorting
-export const getAllEmailAccounts = async (req, res) => {
+exports.getAllEmailAccounts = async (req, res) => {
+  if (req.user.role === roles.USER) {
+    const user = User.findById(req.user.id);
+    if (user.subscription.expiresAt < Date.now()) {
+      return res.status(400).json({ message: "Subscribe to get data" });
+    }
+  }
   try {
     const {
       page = 1,
@@ -11,12 +19,14 @@ export const getAllEmailAccounts = async (req, res) => {
       email,
       companyName,
       name,
+      isVerified,
     } = req.query;
     const query = {};
 
     if (email) query.email = new RegExp(email, "i");
     if (companyName) query.companyName = new RegExp(companyName, "i");
     if (name) query.name = new RegExp(name, "i");
+    if (isVerified) query.isVerified = true;
 
     const emailAccounts = await EmailAccount.find(query)
       .sort({ [sort]: order === "asc" ? 1 : -1 })
