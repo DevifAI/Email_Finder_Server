@@ -1,7 +1,15 @@
 const EmailAccount = require("../models/emailaccount.model");
+const User = require("../models/user.model");
+const { roles } = require("../utils/config");
 
 // GET all with filters + pagination + sorting
 exports.getAllEmailAccounts = async (req, res) => {
+  if (req.user.role === roles.USER) {
+    const user = User.findById(req.user.id);
+    if (user.subscription.expiersAt < Date.now()) {
+      res.status(400).json({ message: "Subscribe to get data" });
+    }
+  }
   try {
     const {
       page = 1,

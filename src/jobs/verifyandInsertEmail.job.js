@@ -6,7 +6,6 @@ const verifyEmail = require("../utils/verifyEmail");
 module.exports = (agenda) => {
   agenda.define("verify_and_save_email", async (job, done) => {
     const { row, bulkUploadId } = job.attrs.data;
-
     const { email, name, companyName, salaryRange, address, phoneNumber } = row;
 
     try {
@@ -16,47 +15,52 @@ module.exports = (agenda) => {
         await BulkUpload.findByIdAndUpdate(bulkUploadId, {
           $inc: { skipped: 1 },
         });
-        return done();
+      } else {
+        const response = await verifyEmail(email);
+        const result = response?.data?.result;
+        const reason = response?.data?.reason;
+
+        if (reason === "accepted_email" && result === "deliverable") {
+          await EmailAccount.create({
+            name,
+            email,
+            companyName,
+            salaryRange,
+            address,
+            phoneNumber,
+            isVerified: true,
+            emailData: response?.data,
+          });
+
+          await BulkUpload.findByIdAndUpdate(bulkUploadId, {
+            $inc: { inserted: 1 },
+          });
+        } else {
+          await BulkUpload.findByIdAndUpdate(bulkUploadId, {
+            $inc: { skipped: 1 },
+          });
+        }
       }
 
-      const response = await verifyEmail(email);
-      console.log(isValid);
-      if (response.error) {
-        await BulkUpload.findByIdAndUpdate(bulkUploadId, {
-          $inc: { skipped: 1 },
-        });
-        return done();
-      } // skip if invalid
+      // Now check if processing is complete
+      const updatedUpload = await BulkUpload.findById(bulkUploadId);
       if (
-        response?.data?.reason === "accepted_email" &&
-        response?.data?.result === "delivarable"
+        updatedUpload.inserted + updatedUpload.skipped >= updatedUpload.total &&
+        updatedUpload.status !== "completed"
       ) {
-        await EmailAccount.create({
-          name,
-          email,
-          companyName,
-          salaryRange,
-          address,
-          phoneNumber,
-          isVerified: true,
-          emailData: response?.data,
-        });
         await BulkUpload.findByIdAndUpdate(bulkUploadId, {
-          $inc: { inserted: 1 },
-        });
-        done();
-      } else {
-        await BulkUpload.findByIdAndUpdate(bulkUploadId, {
-          $inc: { skipped: 1 },
+          status: "completed",
         });
       }
-    } catch (error) {
-      console.error("Job error:", error.message);
+
+      done();
+    } catch (err) {
+      console.error("Job error:", err.message);
       await BulkUpload.findByIdAndUpdate(bulkUploadId, {
         status: "failed",
         error: err.message,
       });
-      done(error);
+      done(err);
     }
   });
 };
