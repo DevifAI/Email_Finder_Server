@@ -8,6 +8,7 @@ const emailAccountSchema = new mongoose.Schema(
     salaryRange: { type: String, required: true },
     address: { type: String, required: true },
     phoneNumber: { type: String, required: true },
+    isVerified: { type: String, required: true, default: false },
   },
   { timestamps: true }
 );

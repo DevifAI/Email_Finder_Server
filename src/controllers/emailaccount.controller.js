@@ -11,12 +11,14 @@ exports.getAllEmailAccounts = async (req, res) => {
       email,
       companyName,
       name,
+      isVerified,
     } = req.query;
     const query = {};
 
     if (email) query.email = new RegExp(email, "i");
     if (companyName) query.companyName = new RegExp(companyName, "i");
     if (name) query.name = new RegExp(name, "i");
+    if (isVerified) query.isVerified = true;
 
     const emailAccounts = await EmailAccount.find(query)
       .sort({ [sort]: order === "asc" ? 1 : -1 })

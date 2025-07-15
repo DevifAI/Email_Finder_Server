@@ -9,6 +9,7 @@ exports.protect = (req, res, next) => {
   try {
     console.log(token);
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    console.log(decoded, "decoded");
     req.user = {
       id: decoded.id,
       role: decoded.role,
