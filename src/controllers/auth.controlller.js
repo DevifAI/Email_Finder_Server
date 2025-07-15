@@ -108,6 +108,7 @@ exports.signin = async (req, res) => {
     }
 
     // Generate new token
+    console.log(user._id, "before decoding");
     const token = generateToken({ id: user._id, role: user.role });
 
     // Save token to DB (optional, if you want to track sessions)

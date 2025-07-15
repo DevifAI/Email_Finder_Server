@@ -10,6 +10,10 @@ const emailAccountRoutes = require("./routes/emailaccount.routes");
 require("./config/passport");
 require("dotenv").config();
 
+const agenda = require("./jobs/agenda");
+require("../src/jobs/emailverification.job").default(agenda);
+require("../src/jobs/verifyandInsertEmail.job")(agenda);
+
 const app = express();
 
 // Middlewares
