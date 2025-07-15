@@ -40,7 +40,7 @@ exports.uploadExcel = async (req, res) => {
 
     for (let i = 0; i < sheet.length; i += CHUNK_SIZE) {
       const chunk = sheet.slice(i, i + CHUNK_SIZE);
-      await agenda.now("queue email verification", {
+      await agenda.now("queue_email_verification", {
         chunk,
         bulkUploadId: bulkUpload._id,
       });

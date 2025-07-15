@@ -9,6 +9,7 @@ const emailAccountSchema = new mongoose.Schema(
     address: { type: String, required: true },
     phoneNumber: { type: String, required: true },
     isVerified: { type: String, required: true, default: false },
+    emailData: { type: Object },
   },
   { timestamps: true }
 );
