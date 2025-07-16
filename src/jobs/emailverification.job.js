@@ -4,10 +4,11 @@ export default (agenda) => {
     const { chunk, bulkUploadId } = job.attrs.data;
 
     for (const row of chunk) {
+      console.log(row);
       const { email } = row;
 
       if (email) {
-        await agenda.now("verify_and_save_email", { row, bulkUploadId });
+        agenda.now("verify_and_save_email", { row, bulkUploadId });
       }
     }
   });

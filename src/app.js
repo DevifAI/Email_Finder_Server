@@ -1,4 +1,5 @@
 const express = require("express");
+const cors = require("cors");
 const passport = require("passport");
 const session = require("express-session");
 const authRoutes = require("./routes/auth.routes");
@@ -17,6 +18,8 @@ require("../src/jobs/verifyandInsertEmail.job")(agenda);
 const app = express();
 
 // Middlewares
+// Enable CORS for all origins
+app.use(cors());
 app.use(express.json());
 app.use(
   session({

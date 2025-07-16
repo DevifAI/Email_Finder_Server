@@ -6,12 +6,13 @@ const verifyEmail = require("../utils/verifyEmail");
 module.exports = (agenda) => {
   agenda.define("verify_and_save_email", async (job, done) => {
     const { row, bulkUploadId } = job.attrs.data;
-    const { email, name, companyName, salaryRange, address, phoneNumber } = row;
+    const { email, name, companyName, linkedin, position, website } = row;
 
     try {
       const alreadyExists = await EmailAccount.findOne({ email });
 
       if (alreadyExists) {
+        console.log(email, "already exisys");
         await BulkUpload.findByIdAndUpdate(bulkUploadId, {
           $inc: { skipped: 1 },
         });
@@ -21,21 +22,24 @@ module.exports = (agenda) => {
         const reason = response?.data?.reason;
 
         if (reason === "accepted_email" && result === "deliverable") {
+          console.log(email, reason, result, "accepted");
           await EmailAccount.create({
             name,
             email,
             companyName,
-            salaryRange,
-            address,
-            phoneNumber,
+            linkedIn: linkedin,
+            position,
+            company: companyName,
             isVerified: true,
             emailData: response?.data,
+            website,
           });
 
           await BulkUpload.findByIdAndUpdate(bulkUploadId, {
             $inc: { inserted: 1 },
           });
         } else {
+          console.log(email, reason, result, "rejected");
           await BulkUpload.findByIdAndUpdate(bulkUploadId, {
             $inc: { skipped: 1 },
           });
