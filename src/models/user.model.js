@@ -10,6 +10,7 @@ const userSchema = new mongoose.Schema(
     email: { type: String, required: true, unique: true },
 
     role: { type: String, enum: ["admin", "user"], default: "user" },
+    isActive: { type: Boolean, default: true },
     subscription: {
       plan: { type: mongoose.Schema.Types.ObjectId, ref: "Plan" },
       subscribedAt: { type: Date },
