@@ -133,18 +133,28 @@ exports.signin = async (req, res) => {
 
 exports.logout = async (req, res) => {
   try {
-    const token = req.token;
-    const userId = req.user.id;
+    // Get token from header or session
+    const token =
+      req.headers.authorization?.replace("Bearer ", "") || req.session?.token;
+    const userId = req.session?.user?.id || req.user?.id;
 
     if (!token || !userId) {
       return res.status(401).json({ message: "Not authenticated" });
     }
 
     // Remove the current token from tokens array
+    const user = await AuthAccount.findById(userId);
 
-    const user = User.findById(userId);
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
     user.tokens = user.tokens.filter((t) => t.token !== token);
     await user.save();
+
+    // Destroy session
+    if (req.session) {
+      req.session.destroy(() => {});
+    }
 
     res.json({ message: "Logged out successfully" });
   } catch (err) {

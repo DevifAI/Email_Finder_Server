@@ -8,6 +8,7 @@ const planRoutes = require("./routes/plans.routes");
 const subscriptionRoutes = require("./routes/subscription.route");
 const fileUploadRoutes = require("./routes/fileupload.routes");
 const emailAccountRoutes = require("./routes/emailaccount.routes");
+const paymentRoutes = require("./routes/payment.routes");
 require("./config/passport");
 require("dotenv").config();
 
@@ -40,5 +41,7 @@ app.use("/emailFinder/api/subscriptions", subscriptionRoutes);
 
 app.use("/emailFinder/api/upload", fileUploadRoutes);
 app.use("/emailFinder/api/emailaccounts", emailAccountRoutes);
+
+app.use("/emailFinder/api/payment", paymentRoutes);
 
 module.exports = app;

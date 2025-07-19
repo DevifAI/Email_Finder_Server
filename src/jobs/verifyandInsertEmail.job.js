@@ -21,29 +21,21 @@ module.exports = (agenda) => {
         const result = response?.data?.result;
         const reason = response?.data?.reason;
 
-        if (reason === "accepted_email" && result === "deliverable") {
-          console.log(email, reason, result, "accepted");
-          await EmailAccount.create({
-            name,
-            email,
-            companyName,
-            linkedIn: linkedin,
-            position,
-            company: companyName,
-            isVerified: true,
-            emailData: response?.data,
-            website,
-          });
+        await EmailAccount.create({
+          name,
+          email,
+          companyName,
+          linkedIn: linkedin,
+          position,
+          company: companyName,
+          isVerified: reason === "accepted_email" && result === "deliverable",
+          emailData: response?.data,
+          website,
+        });
 
-          await BulkUpload.findByIdAndUpdate(bulkUploadId, {
-            $inc: { inserted: 1 },
-          });
-        } else {
-          console.log(email, reason, result, "rejected");
-          await BulkUpload.findByIdAndUpdate(bulkUploadId, {
-            $inc: { skipped: 1 },
-          });
-        }
+        await BulkUpload.findByIdAndUpdate(bulkUploadId, {
+          $inc: { inserted: 1 },
+        });
       }
 
       // Now check if processing is complete
