@@ -6,16 +6,30 @@ const verifyEmail = require("../utils/verifyEmail");
 module.exports = (agenda) => {
   agenda.define("verify_and_save_email", async (job, done) => {
     const { row, bulkUploadId } = job.attrs.data;
-    const { email, name, companyName, linkedin, position, website } = row;
+    const {
+      email,
+      name,
+      companyname,
+      linkedin,
+      position,
+      website,
+      personalcontactno,
+      location,
+      industry,
+      size,
+      funding,
+      role,
+    } = row;
 
     try {
       const alreadyExists = await EmailAccount.findOne({ email });
 
       if (alreadyExists) {
         console.log(email, "already exisys");
-        await BulkUpload.findByIdAndUpdate(bulkUploadId, {
-          $inc: { skipped: 1 },
-        });
+        if (bulkUploadId)
+          await BulkUpload.findByIdAndUpdate(bulkUploadId, {
+            $inc: { skipped: 1 },
+          });
       } else {
         const response = await verifyEmail(email);
         const result = response?.data?.result;
@@ -24,10 +38,16 @@ module.exports = (agenda) => {
         await EmailAccount.create({
           name,
           email,
-          companyName,
-          linkedIn: linkedin,
+          companyname,
+          linkedin,
           position,
-          company: companyName,
+          companyname,
+          personalcontactno,
+          location,
+          industry,
+          size,
+          funding,
+          role,
           isVerified: reason === "accepted_email" && result === "deliverable",
           emailData: response?.data,
           website,
@@ -37,25 +57,29 @@ module.exports = (agenda) => {
           $inc: { inserted: 1 },
         });
       }
-
-      // Now check if processing is complete
-      const updatedUpload = await BulkUpload.findById(bulkUploadId);
-      if (
-        updatedUpload.inserted + updatedUpload.skipped >= updatedUpload.total &&
-        updatedUpload.status !== "completed"
-      ) {
-        await BulkUpload.findByIdAndUpdate(bulkUploadId, {
-          status: "completed",
-        });
+      if (bulkUploadId) {
+        // Now check if processing is complete
+        const updatedUpload = await BulkUpload.findById(bulkUploadId);
+        if (
+          updatedUpload.inserted + updatedUpload.skipped >=
+            updatedUpload.total &&
+          updatedUpload.status !== "completed"
+        ) {
+          await BulkUpload.findByIdAndUpdate(bulkUploadId, {
+            status: "completed",
+          });
+        }
       }
 
       done();
     } catch (err) {
       console.error("Job error:", err.message);
-      await BulkUpload.findByIdAndUpdate(bulkUploadId, {
-        status: "failed",
-        error: err.message,
-      });
+      if (bulkUploadId) {
+        await BulkUpload.findByIdAndUpdate(bulkUploadId, {
+          status: "failed",
+          error: err.message,
+        });
+      }
       done(err);
     }
   });

@@ -24,19 +24,22 @@ exports.signup = async (req, res) => {
     }
 
     const hashedPassword = await bcrypt.hash(password, 10);
-    const token = generateToken({ id: email });
 
     //  Create AuthAccount
     user = await AuthAccount.create({
       email,
       password: hashedPassword,
       role: roles.USER,
+    });
+    // we need to create the token after the a
+    const token = generateToken({ id: user._id, role: roles.USER });
+    user = await AuthAccount.findByIdAndUpdate(user._id, {
       tokens: [{ token }],
     });
 
     //  Create linked User profile (only if AuthAccount is new)
     await User.create({
-      authId: user._id,
+      _id: user._id,
       email: user.email,
       role: user.role,
     });
@@ -63,18 +66,21 @@ exports.createAdminAccount = async (req, res) => {
     }
 
     const hashedPassword = await bcrypt.hash(password, 10);
-    const token = generateToken({ id: email });
 
     user = await AuthAccount.create({
       email,
       password: hashedPassword,
       role: roles.ADMIN,
+    });
+
+    const token = generateToken({ id: user._id, role: roles.USER });
+    user = await AuthAccount.findByIdAndUpdate(user._id, {
       tokens: [{ token }],
     });
 
     //  Create linked User profile (only if AuthAccount is new)
     await User.create({
-      authId: user._id,
+      _id: user._id,
       email: user.email,
       role: user.role,
     });
@@ -108,7 +114,7 @@ exports.signin = async (req, res) => {
     }
 
     // Generate new token
-    console.log(user._id, "before decoding");
+    const userData = await User.findById(user._id);
     const token = generateToken({ id: user._id, role: user.role });
 
     // Save token to DB (optional, if you want to track sessions)
@@ -125,6 +131,7 @@ exports.signin = async (req, res) => {
     res.json({
       message: "Signed in",
       token,
+      user: userData,
     });
   } catch (err) {
     res.status(500).json({ message: err.message });

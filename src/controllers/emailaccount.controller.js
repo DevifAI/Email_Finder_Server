@@ -1,3 +1,4 @@
+const agenda = require("../jobs/agenda");
 const EmailAccount = require("../models/emailaccount.model");
 const User = require("../models/user.model");
 const { roles } = require("../utils/config");
@@ -17,16 +18,16 @@ exports.getAllEmailAccounts = async (req, res) => {
       sort = "createdAt",
       order = "desc",
       email,
-      companyName,
+      companyname,
       name,
-      isVerified,
+      isverified,
     } = req.query;
     const query = {};
 
     if (email) query.email = new RegExp(email, "i");
-    if (companyName) query.companyName = new RegExp(companyName, "i");
+    if (companyname) query.companyname = new RegExp(companyname, "i");
     if (name) query.name = new RegExp(name, "i");
-    if (isVerified) query.isVerified = true;
+    if (isverified) query.isverified = true;
 
     const emailAccounts = await EmailAccount.find(query)
       .sort({ [sort]: order === "asc" ? 1 : -1 })
@@ -63,21 +64,13 @@ exports.getEmailAccount = async (req, res) => {
 // POST create
 exports.createEmailAccount = async (req, res) => {
   try {
-    const { name, email, companyName, salaryRange, address, phoneNumber } =
-      req.body;
+    const { email } = req.body;
 
     if (await EmailAccount.findOne({ email })) {
       return res.status(400).json({ message: "Email already exists" });
     }
 
-    const account = await EmailAccount.create({
-      name,
-      email,
-      companyName,
-      salaryRange,
-      address,
-      phoneNumber,
-    });
+    agenda.now("verify_and_save_email", { row: req.body });
 
     res.status(201).json(account);
   } catch (err) {
