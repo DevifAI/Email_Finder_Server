@@ -35,7 +35,7 @@ module.exports = (agenda) => {
         const result = response?.data?.result;
         const reason = response?.data?.reason;
 
-        await EmailAccount.create({
+        const newEmailAccount = await EmailAccount.create({
           name,
           email,
           companyname,
@@ -48,11 +48,11 @@ module.exports = (agenda) => {
           size,
           funding,
           role,
-          isVerified: reason === "accepted_email" && result === "deliverable",
+          isverified: reason === "accepted_email" && result === "deliverable",
           emailData: response?.data,
           website,
         });
-
+        console.log("created new", newEmailAccount);
         await BulkUpload.findByIdAndUpdate(bulkUploadId, {
           $inc: { inserted: 1 },
         });
@@ -61,6 +61,7 @@ module.exports = (agenda) => {
         // Now check if processing is complete
         const updatedUpload = await BulkUpload.findById(bulkUploadId);
         if (
+          updatedUpload &&
           updatedUpload.inserted + updatedUpload.skipped >=
             updatedUpload.total &&
           updatedUpload.status !== "completed"
