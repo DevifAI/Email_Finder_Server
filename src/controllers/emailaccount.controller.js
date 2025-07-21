@@ -6,7 +6,7 @@ const { roles } = require("../utils/config");
 // GET all with filters + pagination + sorting
 exports.getAllEmailAccounts = async (req, res) => {
   if (req.user.role === roles.USER) {
-    const user = User.findById(req.user.id);
+    const user = await User.findById(req.user.id);
     if (user.subscription.expiresAt < Date.now()) {
       return res.status(400).json({ message: "Subscribe to get data" });
     }
@@ -35,11 +35,13 @@ exports.getAllEmailAccounts = async (req, res) => {
       .limit(parseInt(limit));
 
     const count = await EmailAccount.countDocuments(query);
+    const totalPages = Math.ceil(count / limit);
 
     res.json({
       data: emailAccounts,
       total: count,
       page: parseInt(page),
+      totalPages,
       limit: parseInt(limit),
     });
   } catch (err) {
