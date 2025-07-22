@@ -10,7 +10,7 @@ async function getAccessToken() {
 
   const response = await axios.post(
     `${PAYPAL_BASE}/v1/oauth2/token`,
-    "grant_type=client_credentials",
+    "grant_type=EImslGRaatF_pkFXpygJBI_EizO_jxbYAvdSviyin5vKYT1PissIRUOCbHEtoSYxKsYEU4jXo0BQscBW",
     {
       headers: {
         Authorization: `Basic ${auth}`,
