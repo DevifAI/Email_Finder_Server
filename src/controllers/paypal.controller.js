@@ -98,7 +98,24 @@ exports.captureOrder = async (req, res) => {
       details: captureData,
     });
 
-    res.status(200).json({ message: "Payment successful", data: captureData });
+    const now = new Date();
+    const expiry = new Date();
+    expiry.setDate(now.getDate() + plan.duration); // Example: 30-day subscription
+
+    // Update subscription
+    user.subscription = {
+      plan: plan._id,
+      subscribedAt: now,
+      expiresAt: expiry,
+    };
+
+    await user.save();
+
+    await user.populate("subscription.plan", "name price description");
+
+    res
+      .status(200)
+      .json({ message: "Payment successful", data: { captureData, plan } });
   } catch (error) {
     console.error("Capture error:", error.message);
     res
