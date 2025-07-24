@@ -1,4 +1,5 @@
 const User = require("../models/user.model");
+const { roles } = require("../utils/config");
 
 // Admin  : Get all users
 exports.getUsers = async (req, res) => {
@@ -76,7 +77,11 @@ exports.createUser = async (req, res) => {
 
 // Admin + User : Update user
 exports.updateUser = async (req, res) => {
-  console.log("Updating user:", req.params.id, req.body);
+  if (req.user.role === roles.USER && req.body.isActive) {
+    return res
+      .status(401)
+      .json({ message: "User cannot deactivate or activate user or admin" });
+  }
   const user = await User.findByIdAndUpdate(req.params.id, req.body, {
     new: true,
   });
@@ -89,6 +94,7 @@ exports.updateUser = async (req, res) => {
       email: user.email,
       role: user.role,
       createdAt: user.createdAt,
+      isActive: user.isActive,
     },
   });
 };

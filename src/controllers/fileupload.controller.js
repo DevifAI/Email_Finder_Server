@@ -32,7 +32,7 @@ exports.uploadExcel = async (req, res) => {
 
     await agenda.start();
     console.log(req.user);
-    const bulkUpload = await BulkUpload.create({
+    const bulkUploadInstance = await BulkUpload.create({
       admin: req.user.id,
       total: sheet.length,
       status: "processing",
@@ -42,14 +42,14 @@ exports.uploadExcel = async (req, res) => {
       const chunk = sheet.slice(i, i + CHUNK_SIZE);
       await agenda.now("queue_email_verification", {
         chunk,
-        bulkUploadId: bulkUpload._id,
+        bulkUploadId: bulkUploadInstance._id,
       });
     }
 
     res.json({
       message: "Verification jobs queued successfully",
       total: sheet.length,
-      bulkUploadId: bulkUpload._id,
+      bulkUploadId: bulkUploadInstance._id,
     });
   } catch (err) {
     console.error("Upload error:", err.message);

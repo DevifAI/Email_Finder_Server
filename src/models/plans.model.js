@@ -3,9 +3,10 @@ const mongoose = require("mongoose");
 const planSchema = new mongoose.Schema(
   {
     name: { type: String, required: true },
-    description: String,
+    description: { type: String, required: true },
     price: { type: Number, required: true },
     duration: { type: Number, required: true }, // Duration in days
+    features: [{ type: String }],
   },
   { timestamps: true }
 );

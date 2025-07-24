@@ -10,7 +10,7 @@ const {
 const router = express.Router();
 
 // USER + ADMIN: View plans (no admin check, just protect)
-router.get("/", protect, getPlans);
+router.get("/", getPlans);
 
 // ADMIN: write operations
 // Only admin can create, update, or delete plans

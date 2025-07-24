@@ -14,8 +14,14 @@ exports.getPlans = async (req, res) => {
 // ADMIN: Create plan
 exports.createPlan = async (req, res) => {
   try {
-    const { name, description, price, duration } = req.body;
-    const plan = await Plan.create({ name, description, price, duration });
+    const { name, description, price, duration, features } = req.body;
+    const plan = await Plan.create({
+      name,
+      description,
+      price,
+      duration,
+      features,
+    });
     res.status(201).json(plan);
   } catch (err) {
     console.error("Error creating plan:", err.message);

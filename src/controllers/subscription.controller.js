@@ -14,6 +14,10 @@ exports.subscribeToPlan = async (req, res) => {
 
     const planId = req.body.planId;
 
+    if (!planId) {
+      return res.status(400).json({ message: "Plan id required" });
+    }
+
     // Check if plan exists
     const plan = await Plan.findById(planId);
     if (!plan) {

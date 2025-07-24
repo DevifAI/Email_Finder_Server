@@ -3,13 +3,21 @@ const mongoose = require("mongoose");
 const emailAccountSchema = new mongoose.Schema(
   {
     name: { type: String, required: true },
+    role: { type: String },
+
+    location: { type: String },
+    industry: { type: String },
+    size: { type: String },
+    funding: { type: String },
     email: { type: String, unique: true, required: true },
-    companyName: { type: String, required: true },
-    salaryRange: { type: String, required: true },
-    address: { type: String, required: true },
-    phoneNumber: { type: String, required: true },
-    isVerified: { type: String, required: true, default: false },
-    emailData: { type: Object },
+    phone: { type: String },
+    personalcontactno: { type: String },
+    companyname: { type: String },
+    position: { type: String },
+    website: { type: String },
+    linkedin: { type: String },
+    isverified: { type: Boolean, default: false },
+    emaildata: { type: Object },
   },
   { timestamps: true }
 );
