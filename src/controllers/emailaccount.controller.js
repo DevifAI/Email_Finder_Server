@@ -5,10 +5,18 @@ const { roles } = require("../utils/config");
 
 // GET all with filters + pagination + sorting
 exports.getAllEmailAccounts = async (req, res) => {
+  const user = await User.findById(req.user.id);
   if (req.user.role === roles.USER) {
-    const user = await User.findById(req.user.id);
-    if (user.subscription.expiresAt < Date.now()) {
-      return res.status(400).json({ message: "Subscribe to get data" });
+    if (!user?.subscription?.expiresAt) {
+      return res
+        .status(400)
+        .json({ message: "You do not have a subscription" });
+    }
+    if (
+      user?.subscription?.expiresAt &&
+      user.subscription.expiresAt < Date.now()
+    ) {
+      return res.status(400).json({ message: "Your subscription has expired" });
     }
   }
   try {
