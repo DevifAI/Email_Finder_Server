@@ -38,14 +38,14 @@ exports.signup = async (req, res) => {
     });
 
     //  Create linked User profile (only if AuthAccount is new)
-    const userProfile = await User.create({
+    let userProfile = await User.create({
       _id: user._id,
       email: user.email,
       role: user.role,
     });
 
     res.status(201).json({
-      message: "User account + profile created successfully",
+      message: "User account created successfully",
       token,
       user: userProfile,
     });
@@ -130,7 +130,7 @@ exports.signin = async (req, res) => {
     };
 
     res.json({
-      message: "Signed in",
+      message: "Signed in successfully",
       token,
       user: userData,
     });
